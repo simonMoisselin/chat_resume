@@ -57,19 +57,28 @@ const ResumeUploader = () => {
           accept=".jpg, .jpeg, .png"
         />
         <button
-          disabled={isLoading}
+          disabled={!resume || isLoading}
           onClick={uploadResume}
-          className={`w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300 ease-in-out ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300 ease-in-out ${isLoading || !resume ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Upload Resume
+          Review Resume
         </button>
       </div>
 
-      <div className="w-full max-w-xl">
-        <div className="markdown bg-white p-4 rounded shadow h-64 overflow-auto">
-          <ReactMarkdown>{text || "Your resume review will appear here..."}</ReactMarkdown>
+      <div className="w-full max-w-4xl">
+        <h2 className="text-3xl font-semibold mb-4">Feedback</h2>
+        <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
+          <ReactMarkdown>{resume || "Your resume feedback will appear here..."}</ReactMarkdown>
         </div>
       </div>
+
+      <style>
+        {`
+          .custom-markdown p {
+            margin-bottom: 1.5em; /* Increase the bottom margin of paragraphs */
+          }
+        `}
+      </style>
     </div>
   );
 };

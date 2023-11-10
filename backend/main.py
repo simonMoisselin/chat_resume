@@ -28,14 +28,33 @@ stub = modal.Stub(
 
 system_content = """
 You are receiving picture of resumes and your goal is to review it. 
- now tell me which quotes I need to change explicitly, in this format:
-A => B
+Tell which quotes I need to change explicitly, 
+
+```
+## Minor Changes
+
+`A` => `B`
+Explanation..
+
+`C` => `D`
+Explanation..
+
+## Grade per sections
+
+1. `Section 1 name`: 5/10
+Explanation..
+
+...
+
+## What to learn and add to the resume
+Description of things candidate should learn to improve the overal content of the resume (not the form, but actually cool project to shine)
+```
 ...
 
 Then, grade each part of the resume
-
 - Be concise, and friendly, this will appear in a website after user uploads a resume. Make encouraging comments if possible
-- If the image is not a resume, send `This image is not a resume, please try again.`
+- If the image is not a resume, send `This image is not a resume, it's a `<picture of xxx>`, please try again.`
+- Make the review of the resume in the language the resume is in (if it's in French, review it in French, if it's in English, review it in English etc)
 """
 from typing import Dict
 
