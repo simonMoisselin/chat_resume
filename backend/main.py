@@ -62,6 +62,21 @@ import openai
 from fastapi import FastAPI, File, UploadFile
 
 
+def call_openai(messages, max_tokens, model="gpt-4-1106-preview"):
+    import openai
+    completion = openai.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=0.,
+        max_tokens=max_tokens,
+        stream=True  # this time, we set stream=True
+    )
+    for i, chunk in enumerate(completion):
+        # extract the message
+        chunk_message = chunk.choices[0].delta.content
+        if chunk_message is not None:
+            yield chunk_message
+
 @stub.function()
 @web_endpoint(
     method="POST",
@@ -77,16 +92,14 @@ def review_resume(image: UploadFile):
     messages = [
         {"role": "system", "content": [{"type": "text", "text": system_content}]}
     ] + [{"role": "user", "content": content_images}]
-
-    response = client.chat.completions.create(
-        model="gpt-4-vision-preview",
-        messages=messages,
-        max_tokens=2000,
+    response = call_openai(messages, max_tokens=2000, model="gpt-4-vision-preview")
+    return StreamingResponse(
+        response,
+        media_type="text/event-stream"
     )
-
-    print(f"No. of choices: {len(response.choices)}")
-    print(response.choices)
-    return response.choices[0].message.content
+    
+    
+    
 
 
 def test_review_resume():

@@ -15,31 +15,54 @@ const ResumeUploader = () => {
   };
 
   const uploadResume = async () => {
+    setIsLoading(true); // Start loading
+    setReviewMarkdown("Loading... This could take 20-30 seconds.")
     const formData = new FormData();
     formData.append('image', resume);
 
+    fetch('https://simonmoisselin--resume-v1-review-resume.modal.run', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        const reader = response.body.getReader();
+        let decoder = new TextDecoder();
+        let buffer = "";
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://simonmoisselin--resume-v1-review-resume.modal.run`, {
-        method: 'POST',
-        body: formData,
+        function processStream({ done, value }) {
+          if (done) {
+            setIsLoading(false); // Stop loading when the stream is complete
+            return;
+          }
+
+          // Decode stream chunks and add to buffer
+          buffer += decoder.decode(value, { stream: true });
+
+          // Check for the end of the chunk
+          let newlineIndex = buffer.indexOf("\n\n");
+          while (newlineIndex !== -1) {
+            let chunk = buffer.slice(0, newlineIndex).trim();
+            buffer = buffer.slice(newlineIndex + 2);
+            setReviewMarkdown((prevMarkdown) => prevMarkdown + chunk);
+            newlineIndex = buffer.indexOf("\n\n");
+          }
+
+          // Continue reading the stream
+          reader.read().then(processStream);
+        }
+
+        // Start processing the stream
+        reader.read().then(processStream);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error uploading file:', error);
+        setReviewMarkdown(error)
+        // Handle the error state as needed
       });
-
-      setIsLoading(false);
-      if (response.ok) {
-        const markdown = await response.text();
-        setReviewMarkdown(markdown);
-      } else {
-        console.error('Error uploading file:', response.statusText);
-        setReviewMarkdown(response.statusText)
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      setReviewMarkdown(error)
-      setIsLoading(false);
-    }
   };
+
+
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-12" style={{ backgroundColor }}>
@@ -68,16 +91,17 @@ const ResumeUploader = () => {
       <div className="w-full max-w-4xl">
         <h2 className="text-3xl font-semibold mb-4">Feedback</h2>
         <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
-          <ReactMarkdown>{resume || "Your resume feedback will appear here..."}</ReactMarkdown>
+          <ReactMarkdown>{reviewMarkdown || "Your resume feedback will appear here..."}</ReactMarkdown>
         </div>
       </div>
 
       <style>
         {`
-          .custom-markdown p {
-            margin-bottom: 1.5em; /* Increase the bottom margin of paragraphs */
-          }
-        `}
+        @keyframes loadProgress {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+      `}
       </style>
     </div>
   );
