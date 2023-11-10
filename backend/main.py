@@ -37,18 +37,22 @@ Then, grade each part of the resume
 - Be concise, and friendly, this will appear in a website after user uploads a resume. Make encouraging comments if possible
 - If the image is not a resume, send `This image is not a resume, please try again.`
 """
+from typing import Dict
+
 import openai
+from fastapi import FastAPI, File, UploadFile
 
 
 @stub.function()
 @web_endpoint(
     method="POST",
 )
-def review_resume(image: bytes):
+def review_resume(image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
     import base64
+    image_bytes = image.file.read()
     client = openai.Client()
-    base64_img = base64.b64encode(image).decode("utf-8")
+    base64_img = base64.b64encode(image_bytes).decode("utf-8")
     # only 1 image for now
     content_images = [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}]
     messages = [

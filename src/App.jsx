@@ -13,15 +13,15 @@ const ResumeUploader = () => {
   const uploadResume = async () => {
     const formData = new FormData();
     formData.append('image', resume);
-    // get bytes representation of resume not the buffer the real bytes
-    const resumeBytes = await new Response(resume).arrayBuffer();
-    // send image as a query param
+
 
     setIsLoading(true);
     try {
-      const response = await fetch(`https://simonmoisselin--resume-v1-review-resume.modal.run?image=${resumeBytes}`, {
+      const response = await fetch(`https://simonmoisselin--resume-v1-review-resume.modal.run`, {
         method: 'POST',
+        body: formData,
       });
+
       setIsLoading(false);
       if (response.ok) {
         const markdown = await response.text();
