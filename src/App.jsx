@@ -6,7 +6,6 @@ import "./App.css"
 import { inject } from '@vercel/analytics';
 
 
-const markdown = "# Your markdown here with `variables` and **formatting**\n Normal text heere with some code ```python\nimport numpy as np```"
 inject();
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
