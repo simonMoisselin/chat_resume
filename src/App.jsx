@@ -28,7 +28,7 @@ const ResumeUploader = () => {
       method: 'POST',
       headers: {
         // Include the Authorization header with the Bearer token
-        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN}`,
+        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN || process.env.VITE_AUTH_TOKEN}`,
       },
       body: formData,
     })
