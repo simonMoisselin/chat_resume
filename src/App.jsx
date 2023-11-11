@@ -5,7 +5,7 @@ import rehypeHighlight from 'rehype-highlight'
 import "./App.css"
 import { inject } from '@vercel/analytics';
 
-
+const explainResumeUrl = "https://simonmoisselin--resume-v1-review-resume.modal.run"
 inject();
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
@@ -23,7 +23,7 @@ const ResumeUploader = () => {
     const formData = new FormData();
     formData.append('image', resume, );
 
-    fetch('https://simonmoisselin--resume-v1-review-resume.modal.run', {
+    fetch(explainResumeUrl, {
       method: 'POST',
       headers: {
         // Include the Authorization header with the Bearer token
