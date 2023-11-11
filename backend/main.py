@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 app_image = (
-    modal.Image.debian_slim().pip_install("openai==1.1.1","numpy","Pillow",)
+    modal.Image.debian_slim().pip_install("openai==1.1.1","numpy","Pillow","pdf2image")
 )
 
 stub = modal.Stub(
@@ -32,22 +32,14 @@ Tell which quotes I need to change explicitly,
 
 ```
 ## Minor Changes
-
-`A` => 
-`B`
-
-Explanation..
-
-`C` =>
-`D`
-Explanation..
+(Show a table with 3 columns: `Quote`, `Change`, `Explanation`, then a conclusion for how to be more professional in general)
 
 ## Scoring
-Should have 1 quote for overall score, then show a table with score grade per section - 1 row per section
+(Should have 1 quote for overall score, then show a table with score grade per section - with those columns: `Section`, `Score`, `Next Steps`)
 
 ...
 
-## What to learn and add to the resume
+## Remarks
 Description of things candidate should learn to improve the overal content of the resume (not the form, but actually cool project to shine)
 ```
 ...
@@ -83,7 +75,6 @@ def call_openai(messages, max_tokens, model="gpt-4-1106-preview"):
         # extract the message
             chunk_message = chunk.choices[0].delta.content
             if chunk_message is not None:
-                print(chunk_message)
                 yield chunk_message
     except Exception as e:
         print(e)
@@ -99,6 +90,7 @@ def verify_token(token):
 
 
 
+
 @stub.function()
 @web_endpoint(
     method="POST",
@@ -106,9 +98,29 @@ def verify_token(token):
 def review_resume(request: Request,image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
     import base64
-    image_bytes = image.file.read()
+    import io
+
+    from pdf2image import convert_from_bytes
+    
+    file_extension = image.filename.split('.')[-1].lower()
+    file_data = image.file.read()
+    if file_extension in ["jpg", "jpeg", "png"]:
+        # It's an image, process as before
+        image_bytes = file_data
+    elif file_extension == "pdf":
+        # It's a PDF, convert to image
+        # await not allowed in function but get the image.read() as bytes
+        pdf_bytes = file_data
+        images = convert_from_bytes(pdf_bytes)
+        if images:
+            image_bytes = io.BytesIO()
+            images[0].save(image_bytes, format='JPEG')
+            image_bytes = image_bytes.getvalue()
+        else:
+            return {"error": "The PDF file is empty"}, 400
+    else:
+        return {"error": "Unsupported file type"}, 400
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
-    print(f"Image size: {len(base64_img)}")
 
     auth_header = request.headers.get("Authorization")
     if not auth_header:

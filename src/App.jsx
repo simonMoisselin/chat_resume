@@ -3,10 +3,11 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import "./App.css"
+import { inject } from '@vercel/analytics';
 
 
 const markdown = "# Your markdown here with `variables` and **formatting**\n Normal text heere with some code ```python\nimport numpy as np```"
-
+inject();
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
   const [reviewMarkdown, setReviewMarkdown] = useState("Feedback will appear here");
@@ -75,7 +76,7 @@ const ResumeUploader = () => {
             file:text-sm file:font-semibold
             file:bg-blue-50 file:text-blue-700
             hover:file:bg-blue-100"
-          accept=".jpg, .jpeg, .png"
+          accept=".jpg, .jpeg, .png, .pdf"
         />
         <button
           disabled={!resume || isLoading}
