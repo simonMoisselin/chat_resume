@@ -9,7 +9,7 @@ const markdown = "# Your markdown here with `variables` and **formatting**\n Nor
 
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
-  const [reviewMarkdown, setReviewMarkdown] = useState(markdown);
+  const [reviewMarkdown, setReviewMarkdown] = useState("Feedback will appear here");
   const backgroundColor = '#f7fafc'; // Tailwind's cool gray 100, change as needed
   const [isLoading, setIsLoading] = useState(false);
   const handleFileChange = (e) => {
@@ -21,7 +21,7 @@ const ResumeUploader = () => {
     setReviewMarkdown(''); // Clear previous review
 
     const formData = new FormData();
-    formData.append('image', resume);
+    formData.append('image', resume, );
 
     fetch('https://simonmoisselin--resume-v1-review-resume.modal.run', {
       method: 'POST',
@@ -30,17 +30,17 @@ const ResumeUploader = () => {
       .then((response) => {
         const reader = response.body.getReader();
         let decoder = new TextDecoder();
-        let buffer = "";
-
         function processStream({ done, value }) {
           if (done) {
+            const textChunk = decoder.decode(value, { stream: true });
+            setReviewMarkdown(current => current + textChunk);
             setIsLoading(false); // Stop loading when the stream is complete
             return;
           }
-
+          console.log("inside process stream not done")
           // Decode stream chunks and add to buffer
-          buffer += decoder.decode(value, { stream: true });
-          setReviewMarkdown(buffer);
+          const textChunk = decoder.decode(value, { stream: true });
+          setReviewMarkdown(current => current + textChunk)
           // Continue reading the stream
           reader.read().then(processStream);
         }
@@ -88,6 +88,20 @@ const ResumeUploader = () => {
           <Markdown className="markdown" rehypePlugins={[rehypeHighlight]}  remarkPlugins={[remarkGfm]}>{reviewMarkdown || ""}</Markdown>
         </div>
       </div>
+      <footer className="w-full max-w-4xl mt-12 mb-4">
+        <div className="text-center">
+          <p className="text-lg">
+            Hi, I am Simon Moisselin
+          </p>
+          <p className="text-lg">
+            Follow me on <a href="https://www.youtube.com/channel/UCPTEKGB8JbLxdCj4BdPpb3Q?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">YouTube</a>
+          </p>
+          <p className="text-lg mt-2">
+            For questions or partnerships, email me at <a href="mailto:simon.moisselin@gmail.com" className="text-blue-600 hover:underline">simon.moisselin@gmail.com</a>
+          </p>
+        </div>
+      </footer>
+    
     </div>
   );
 };
