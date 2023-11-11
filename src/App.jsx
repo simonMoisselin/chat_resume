@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
@@ -27,7 +27,7 @@ const ResumeUploader = () => {
       method: 'POST',
       headers: {
         // Include the Authorization header with the Bearer token
-        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN || process.env.VITE_AUTH_TOKEN}`,
+        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN }`,
       },
       body: formData,
     })
@@ -37,7 +37,6 @@ const ResumeUploader = () => {
         function processStream({ done, value }) {
           if (done) {
             const textChunk = decoder.decode(value, { stream: true });
-            console.log({textChunk, value, done})
             setReviewMarkdown(current => current + textChunk);
             setIsLoading(false); // Stop loading when the stream is complete
             return;
