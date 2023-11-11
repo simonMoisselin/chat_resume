@@ -56,6 +56,9 @@ Then, grade each part of the resume
 - If the image is not a resume, send `This image is not a resume, it's a `<picture of xxx>`, please try again.`
 - Make the review of the resume in the language the resume is in (if it's in French, review it in French, if it's in English, review it in English etc)
 """
+
+
+# system_content = "Just send a fake markdown text of ~5 lines with a header"
 from typing import Dict
 
 import openai
@@ -85,7 +88,6 @@ def review_resume(image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
     import base64
     image_bytes = image.file.read()
-    client = openai.Client()
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
     # only 1 image for now
     content_images = [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}]
