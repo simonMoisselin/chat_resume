@@ -12,9 +12,14 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
+import pathlib
 
+volume = modal.NetworkFileSystem.persisted("resumes-volume")
+
+CACHE_DIR = "/cache"
+UPLOADED_RESUMES_DIR = pathlib.Path(CACHE_DIR, "uploaded_resumes")
 app_image = (
-    modal.Image.debian_slim().pip_install("openai==1.1.1","numpy","Pillow","pdf2image")
+    modal.Image.debian_slim().apt_install("poppler-utils").pip_install("openai==1.1.1","numpy","Pillow","pdf2image")
 )
 
 stub = modal.Stub(
@@ -91,12 +96,14 @@ def verify_token(token):
 
 
 
-@stub.function()
+@stub.function(    network_file_systems={CACHE_DIR: volume},
+)
 @web_endpoint(
     method="POST",
 )
 def review_resume(request: Request,image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
+    UPLOADED_RESUMES_DIR.mkdir(parents=True, exist_ok=True)
     import base64
     import io
 
@@ -104,6 +111,13 @@ def review_resume(request: Request,image: UploadFile):
     
     file_extension = image.filename.split('.')[-1].lower()
     file_data = image.file.read()
+    import datetime
+    filename_dated = f"{image.filename}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_extension}"
+    dest_file = pathlib.Path(UPLOADED_RESUMES_DIR, filename_dated)
+    with open(dest_file, "wb") as f:
+        f.write(file_data)
+        print(f"Saved {dest_file}")
+
     if file_extension in ["jpg", "jpeg", "png"]:
         # It's an image, process as before
         image_bytes = file_data
@@ -148,14 +162,3 @@ def review_resume(request: Request,image: UploadFile):
 
     
 
-
-def test_review_resume():
-    # create a fake image using numpy
-    import base64
-
-    import numpy as np
-    from PIL import Image
-    img = Image.fromarray(np.zeros((100, 100, 3), dtype=np.uint8))
-    img_bas64 = base64.b64encode(img.tobytes()).decode("utf-8")
-    response = review_resume.local(image=img_bas64)
-    print(response)
