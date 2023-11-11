@@ -33,16 +33,17 @@ Tell which quotes I need to change explicitly,
 ```
 ## Minor Changes
 
-`A` => `B`
+`A` => 
+`B`
+
 Explanation..
 
-`C` => `D`
+`C` =>
+`D`
 Explanation..
 
-## Grade per sections
-
-1. `Section 1 name`: 5/10
-Explanation..
+## Scoring
+Should have 1 quote for overall score, then show a table with score grade per section - 1 row per section
 
 ...
 
@@ -51,7 +52,7 @@ Description of things candidate should learn to improve the overal content of th
 ```
 ...
 
-Then, grade each part of the resume
+- score is between 0 and 10
 - Be concise, and friendly, this will appear in a website after user uploads a resume. Make encouraging comments if possible
 - If the image is not a resume, send `This image is not a resume, it's a `<picture of xxx>`, please try again.`
 - Make the review of the resume in the language the resume is in (if it's in French, review it in French, if it's in English, review it in English etc)
@@ -89,18 +90,39 @@ def call_openai(messages, max_tokens, model="gpt-4-1106-preview"):
         # yield error message
         yield str(e)
     
+def verify_token(token):
+    # TODO: Implement token verification logic
+    # This should validate the token and return True if the token is valid
+    import os
+    return token == os.environ['AUTH_TOKEN_RESUME']
+
+
 
 
 @stub.function()
 @web_endpoint(
     method="POST",
 )
-def review_resume(image: UploadFile):
+def review_resume(request: Request,image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
     import base64
     image_bytes = image.file.read()
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
     print(f"Image size: {len(base64_img)}")
+
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        # No Authorization header present
+        return {"error": "Authorization header is missing"}, 401
+    token_type, _, access_token = auth_header.partition(' ')
+    if token_type != "Bearer" or not access_token:
+        # The Authorization header is malformed or the token is missing
+        return {"error": "Invalid Authorization header"}, 401
+    # TODO: Add your method here to verify the access token
+    if not verify_token(access_token):
+        # The token is invalid
+        return {"error": "Invalid token"}, 403
+    
     # only 1 image for now
     content_images = [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}]
     messages = [

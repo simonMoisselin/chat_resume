@@ -25,6 +25,10 @@ const ResumeUploader = () => {
 
     fetch('https://simonmoisselin--resume-v1-review-resume.modal.run', {
       method: 'POST',
+      headers: {
+        // Include the Authorization header with the Bearer token
+        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN}`,
+      },
       body: formData,
     })
       .then((response) => {
