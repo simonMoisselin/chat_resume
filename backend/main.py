@@ -1,3 +1,6 @@
+import base64
+import datetime
+import io
 import json
 import logging
 import os
@@ -25,7 +28,7 @@ app_image = (
 stub = modal.Stub(
     "resume-v1",
     image=app_image,
-    secrets=[modal.Secret.from_name("twitter")], # TODO update the resume
+    secrets=[modal.Secret.from_name("twitter")],
 )
 
 
@@ -96,6 +99,14 @@ def verify_token(token):
 
 
 
+def save_resume(filename, file_data):
+    file_extension = image.filename.split('.')[-1].lower()
+    filename_dated = f"{image.filename}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_extension}"
+    dest_file = pathlib.Path(UPLOADED_RESUMES_DIR, filename_dated)
+    with open(dest_file, "wb") as f:
+        f.write(file_data)
+        print(f"Saved {dest_file}")
+
 @stub.function(    network_file_systems={CACHE_DIR: volume},
 )
 @web_endpoint(
@@ -103,27 +114,18 @@ def verify_token(token):
 )
 def review_resume(request: Request,image: UploadFile):
     # only review the image of the file - TODO later on take care of PDF
-    UPLOADED_RESUMES_DIR.mkdir(parents=True, exist_ok=True)
-    import base64
-    import io
-
     from pdf2image import convert_from_bytes
+    UPLOADED_RESUMES_DIR.mkdir(parents=True, exist_ok=True)
     
     file_extension = image.filename.split('.')[-1].lower()
     file_data = image.file.read()
-    import datetime
-    filename_dated = f"{image.filename}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_extension}"
-    dest_file = pathlib.Path(UPLOADED_RESUMES_DIR, filename_dated)
-    with open(dest_file, "wb") as f:
-        f.write(file_data)
-        print(f"Saved {dest_file}")
+    filename = image.filename
+    save_resume(filename, file_data)
+    
 
     if file_extension in ["jpg", "jpeg", "png"]:
-        # It's an image, process as before
         image_bytes = file_data
     elif file_extension == "pdf":
-        # It's a PDF, convert to image
-        # await not allowed in function but get the image.read() as bytes
         pdf_bytes = file_data
         images = convert_from_bytes(pdf_bytes)
         if images:
@@ -136,18 +138,24 @@ def review_resume(request: Request,image: UploadFile):
         return {"error": "Unsupported file type"}, 400
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
 
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        # No Authorization header present
-        return {"error": "Authorization header is missing"}, 401
-    token_type, _, access_token = auth_header.partition(' ')
-    if token_type != "Bearer" or not access_token:
-        # The Authorization header is malformed or the token is missing
-        return {"error": "Invalid Authorization header"}, 401
-    # TODO: Add your method here to verify the access token
-    if not verify_token(access_token):
-        # The token is invalid
-        return {"error": "Invalid token"}, 403
+
+
+    def auth_pipeline(request: Request):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            # No Authorization header present
+            return {"error": "Authorization header is missing"}, 401
+        token_type, _, access_token = auth_header.partition(' ')
+        if token_type != "Bearer" or not access_token:
+            # The Authorization header is malformed or the token is missing
+            return {"error": "Invalid Authorization header"}, 401
+        if not verify_token(access_token):
+            # The token is invalid
+            return {"error": "Invalid token"}, 403
+        return None
+    auth_issues = auth_pipeline(request)
+    if auth_issues:
+        return auth_issues
     
     # only 1 image for now
     content_images = [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}]
