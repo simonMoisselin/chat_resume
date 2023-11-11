@@ -69,19 +69,26 @@ from fastapi import FastAPI, File, UploadFile
 @stub.function()
 def call_openai(messages, max_tokens, model="gpt-4-1106-preview"):
     import openai
-    completion = openai.chat.completions.create(
+
+    try:
+        completion = openai.chat.completions.create(
         model=model,
         messages=messages,
         temperature=0.,
         max_tokens=max_tokens,
         stream=True 
     )
-    for i, chunk in enumerate(completion):
+        for i, chunk in enumerate(completion):
         # extract the message
-        chunk_message = chunk.choices[0].delta.content
-        if chunk_message is not None:
-            print(chunk_message)
-            yield chunk_message
+            chunk_message = chunk.choices[0].delta.content
+            if chunk_message is not None:
+                print(chunk_message)
+                yield chunk_message
+    except Exception as e:
+        print(e)
+        # yield error message
+        yield str(e)
+    
 
 
 @stub.function()

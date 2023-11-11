@@ -33,11 +33,11 @@ const ResumeUploader = () => {
         function processStream({ done, value }) {
           if (done) {
             const textChunk = decoder.decode(value, { stream: true });
+            console.log({textChunk, value, done})
             setReviewMarkdown(current => current + textChunk);
             setIsLoading(false); // Stop loading when the stream is complete
             return;
           }
-          console.log("inside process stream not done")
           // Decode stream chunks and add to buffer
           const textChunk = decoder.decode(value, { stream: true });
           setReviewMarkdown(current => current + textChunk)
