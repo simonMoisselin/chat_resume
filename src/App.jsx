@@ -55,7 +55,6 @@ const ResumeUploader = () => {
         setIsLoading(false);
         console.error('Error uploading file:', error);
         setReviewMarkdown(error)
-        // Handle the error state as needed
       });
   };
 
