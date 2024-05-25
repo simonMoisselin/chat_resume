@@ -52,7 +52,6 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-
           <p className="text-gray-500 dark:text-gray-400">Candidate: {candidateName}</p>
           <p className="text-gray-500 dark:text-gray-400">Date: {date}</p>
           {/* make the email clickable */}
@@ -64,44 +63,64 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
           Overall Score: {overallScore}/100
         </div>
       </div>
+
+      {/* New section for personalized learning curriculum */}
+      <div className="mb-6">
+        <h2 className="text-xl font-bold">Personalized Learning Curriculum</h2>
+        <p className="text-gray-700 dark:text-gray-300">
+          Take your career to the next level with a personalized learning curriculum tailored to your resume review. 
+          Our AI-driven service will create a comprehensive learning plan based on your unique strengths and areas for 
+          improvement, ensuring you achieve your professional goals efficiently and effectively.
+        </p>
+        <h3 className="text-lg font-bold">Why Choose Our Personalized Learning Curriculum?</h3>
+        <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
+          <li><strong>Tailored Recommendations:</strong> Receive a curriculum designed specifically for you, targeting the skills and knowledge you need to advance.</li>
+          <li><strong>Expert Guidance:</strong> Benefit from expert advice and resources selected to match your career aspirations.</li>
+          <li><strong>Achieve Your Goals:</strong> Accelerate your career progress with a focused, structured learning path.</li>
+        </ul>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-full mt-4">
+          Invest in Your Future Today! [Pay Now]
+        </button>
+      </div>
+
       <div className="mb-6">
         <h2 className="text-xl font-bold">Summary</h2>
         <p className="text-gray-700 dark:text-gray-300">{summary}</p>
       </div>
       <div className="mt-6">
-  <h2 className="text-xl font-bold mb-2">Recommendations</h2>
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
-    {recommendations.map((recommendation, index) => (
-      <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded shadow-md">
-        <p className="font-bold mb-2">{recommendation.content}</p>
-        <div className="mb-2">
-          <p>Importance:</p>
-          <div className="h-4 bg-gray-200 rounded-full">
-            <div
-              className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
-              style={{
-                width: `${recommendation.importance}%`,
-                opacity: recommendation.importance / 100,
-              }}
-            ></div>
-          </div>
-        </div>
-        <div>
-          <p>Difficulty:</p>
-          <div className="h-4 bg-gray-200 rounded-full">
-            <div
-              className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
-              style={{
-                width: `${recommendation.difficulty}%`,
-                opacity: recommendation.difficulty / 100,
-              }}
-            ></div>
-          </div>
+        <h2 className="text-xl font-bold mb-2">Recommendations</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+          {recommendations.map((recommendation, index) => (
+            <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded shadow-md">
+              <p className="font-bold mb-2">{recommendation.content}</p>
+              <div className="mb-2">
+                <p>Importance:</p>
+                <div className="h-4 bg-gray-200 rounded-full">
+                  <div
+                    className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
+                    style={{
+                      width: `${recommendation.importance}%`,
+                      opacity: recommendation.importance / 100,
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <p>Difficulty:</p>
+                <div className="h-4 bg-gray-200 rounded-full">
+                  <div
+                    className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
+                    style={{
+                      width: `${recommendation.difficulty}%`,
+                      opacity: recommendation.difficulty / 100,
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
       <div className="space-y-8">
         {sections.map((section, index) => (
@@ -137,10 +156,6 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
           </div>
         ))}
       </div>
-
-
-
-     
     </div>
   );
 };
