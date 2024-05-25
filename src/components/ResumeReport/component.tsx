@@ -69,16 +69,40 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
         <p className="text-gray-700 dark:text-gray-300">{summary}</p>
       </div>
       <div className="mt-6">
-        <h2 className="text-xl font-bold mb-2">Action Plan</h2>
-        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
-          {actionPlan.map((item, index) => (
-            <li key={index}>
-              <p className="font-bold">{item.action}</p>
-              <p>Deadline: {item.deadline}</p>
-            </li>
-          ))}
-        </ul>
+  <h2 className="text-xl font-bold mb-2">Recommendations</h2>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+    {recommendations.map((recommendation, index) => (
+      <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded shadow-md">
+        <p className="font-bold mb-2">{recommendation.content}</p>
+        <div className="mb-2">
+          <p>Importance:</p>
+          <div className="h-4 bg-gray-200 rounded-full">
+            <div
+              className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
+              style={{
+                width: `${recommendation.importance}%`,
+                opacity: recommendation.importance / 100,
+              }}
+            ></div>
+          </div>
+        </div>
+        <div>
+          <p>Difficulty:</p>
+          <div className="h-4 bg-gray-200 rounded-full">
+            <div
+              className="h-4 bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
+              style={{
+                width: `${recommendation.difficulty}%`,
+                opacity: recommendation.difficulty / 100,
+              }}
+            ></div>
+          </div>
+        </div>
       </div>
+    ))}
+  </div>
+</div>
+
       <div className="space-y-8">
         {sections.map((section, index) => (
           <div key={index}>
@@ -113,18 +137,9 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
           </div>
         ))}
       </div>
-      <div className="mt-6">
-        <h2 className="text-xl font-bold mb-2">Recommendations</h2>
-        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
-          {recommendations.map((recommendation, index) => (
-            <li key={index}>
-              <p className="font-bold">{recommendation.content}</p>
-              <p>Importance: {recommendation.importance}/100</p>
-              <p>Difficulty: {recommendation.difficulty}/100</p>
-            </li>
-          ))}
-        </ul>
-      </div>
+
+
+
      
     </div>
   );

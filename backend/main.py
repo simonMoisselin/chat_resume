@@ -45,14 +45,10 @@ class SectionFeedback(BaseModel):
 
 
 class Recommendation(BaseModel):
-    content : str = Field(..., description="What is the recommendation, talking to the candidate about what they can improve on directly")
+    content : str = Field(..., description="What is the recommendation, talking to the candidate about what they can improve on directly. Be actionnable and precise, for example, if a new design, say Go on fiveer and find a designer to make a new design for your resume. Or if a skill is missing, say, go to Coursera and take a course on XYZ or something like that. If it's a text update, say, update the text to include XYZ.")
     importance: float = Field(..., ge=0, le=100, description="How important is this recommendation")
     difficulty: float = Field(..., ge=0, le=100, description="How difficult is this recommendation to implement")
 
-
-class ActionPlanItem(BaseModel): 
-    action: str = Field(..., description="What should the candidate do to improve their resume. What to learn / create and what line to add and where as a result")
-    deadline: str = Field(..., description="When should the candidate complete this action, in pretty date, like 'in 2 weeks', 1month, etc. If this is just a text update, just say 'as soon as possible'. If this is a design update, say `next weekend`")
 
 class ResumeReport(BaseModel):
     candidateName: str
@@ -62,8 +58,6 @@ class ResumeReport(BaseModel):
     candidateEmail: str
     recommendations: List[Recommendation]
     summary: str = Field(..., description="A brief summary of the overall assessment")
-    actionPlan: List[ActionPlanItem] = Field(..., description="A detailed action plan for the candidate, where we give resources and deadlines for the candidate to improve their resume, with at least 5 items")
-
 
 
 
