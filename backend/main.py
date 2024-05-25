@@ -86,7 +86,6 @@ client = instructor.from_openai(OpenAI())
 
 @app.function()
 def call_openai(messages, max_tokens, model="gpt-4o"):
-    import openai
     resume_report = client.chat.completions.create(
         model=model,
         messages=messages,
@@ -177,7 +176,7 @@ def review_resume(request: Request,image: UploadFile):
         {"role": "system", "content": [{"type": "text", "text": system_content}]}
     ] + [{"role": "user", "content": content_images}]
     response = call_openai.local(messages, max_tokens=6000, model="gpt-4o")
-
+    print(response)
     return response
 
     

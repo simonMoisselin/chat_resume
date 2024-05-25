@@ -72,7 +72,11 @@ const ResumeUploader = () => {
     })
       .then((response) => {
         // assuming we already have the response object
+        // still a promise
         const returnedData = response.json();
+        setIsLoading(false);
+        setReviewMarkdown(returnedData);
+
         console.log(returnedData);
       })
       .catch((error) => {
