@@ -147,6 +147,7 @@ def review_resume(request: Request,image: UploadFile):
     else:
         return {"error": "Unsupported file type"}, 400
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
+    
 
 
 
