@@ -116,9 +116,12 @@ const ResumeUploader = () => {
               <h2 className="text-xl font-bold">Personalized Learning</h2>
               <p>Boost your career with a tailored learning plan.</p>
             </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
-              Invest in Your Future! [Pay Now]
-            </button>
+            <stripe-buy-button
+  buy-button-id="buy_btn_1PKQ5pHYX9fMF6ejexwgrgIB"
+  publishable-key="pk_live_51KtRE8HYX9fMF6ej7CJAHKE4nM422Vs9NQR4IuoKF2j6mjk0b7DDsFrGtzWP9SqWoEhDTqxfM2n4fOPY2i3jRXlg00gzLdkujq"
+  
+>
+</stripe-buy-button>
           </div>
 
           <h2 className="text-3xl font-semibold mb-4">Report</h2>
