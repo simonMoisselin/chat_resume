@@ -16,6 +16,10 @@ interface ResumeReportProps {
 
 const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
 
+
+  if (!data) {
+    return null;
+  }
   const { candidateName, date, overallScore, sections } = data;
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 max-w-3xl mx-auto">

@@ -85,7 +85,7 @@ import instructor
 client = instructor.from_openai(OpenAI())
 
 @app.function()
-def call_openai(messages, max_tokens, model="gpt-4o"):
+def call_openai(messages, max_tokens, model):
     resume_report = client.chat.completions.create(
         model=model,
         messages=messages,
@@ -162,6 +162,7 @@ def review_resume(request: Request,image: UploadFile):
             return {"error": "Invalid Authorization header"}, 401
         if not verify_token(access_token):
             # The token is invalid
+            print(f"Invalid token: {access_token}")
             return {"error": "Invalid token"}, 403
         return None
     auth_issues = auth_pipeline(request)
@@ -175,7 +176,7 @@ def review_resume(request: Request,image: UploadFile):
     messages = [
         {"role": "system", "content": [{"type": "text", "text": system_content}]}
     ] + [{"role": "user", "content": content_images}]
-    response = call_openai.local(messages, max_tokens=6000, model="gpt-4o")
+    response = call_openai.local(messages, max_tokens=4096, model="gpt-4o")
     print(response)
     return response
 

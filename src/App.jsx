@@ -49,6 +49,7 @@ inject();
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
   const [reviewMarkdown, setReviewMarkdown] = useState("Feedback will appear here");
+  const [reportData, setReportData] = useState(null);
   const backgroundColor = '#f7fafc'; // Tailwind's cool gray 100, change as needed
   const [isLoading, setIsLoading] = useState(false);
   const handleFileChange = (e) => {
@@ -70,14 +71,16 @@ const ResumeUploader = () => {
       },
       body: formData,
     })
+    .then(res=>res.json())
       .then((response) => {
         // assuming we already have the response object
-        // still a promise
-        const returnedData = response.json();
+        // get the PromiseResult object
+        const returnedData = response.data;
+        console.log(returnedData);
         setIsLoading(false);
         setReviewMarkdown(returnedData);
 
-        console.log(returnedData);
+        setReportData(returnedData);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -113,9 +116,9 @@ const ResumeUploader = () => {
       </div>
 
       <div className="w-full max-w-4xl">
-        <h2 className="text-3xl font-semibold mb-4">Feedback</h2>
+        <h2 className="text-3xl font-semibold mb-4">Report</h2>
         <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
-          <ResumeReport data={sampleData} />
+          <ResumeReport data={reportData} />
           {/* <Markdown className="markdown" rehypePlugins={[rehypeHighlight]}  remarkPlugins={[remarkGfm]}>{reviewMarkdown || ""}</Markdown> */}
         </div>
       </div>
