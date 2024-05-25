@@ -14,10 +14,6 @@ interface Recommendation {
   difficulty: number;
 }
 
-interface ActionPlanItem {
-  action: string;
-  deadline: string;
-}
 
 interface ResumeReportProps {
   data: {
@@ -28,7 +24,6 @@ interface ResumeReportProps {
     candidateEmail: string;
     recommendations: Recommendation[];
     summary: string;
-    actionPlan: ActionPlanItem[];
   };
 }
 
@@ -62,25 +57,6 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
         <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-4 py-2 rounded-full font-medium">
           Overall Score: {overallScore}/100
         </div>
-      </div>
-
-      {/* New section for personalized learning curriculum */}
-      <div className="mb-6">
-        <h2 className="text-xl font-bold">Personalized Learning Curriculum</h2>
-        <p className="text-gray-700 dark:text-gray-300">
-          Take your career to the next level with a personalized learning curriculum tailored to your resume review. 
-          Our AI-driven service will create a comprehensive learning plan based on your unique strengths and areas for 
-          improvement, ensuring you achieve your professional goals efficiently and effectively.
-        </p>
-        <h3 className="text-lg font-bold">Why Choose Our Personalized Learning Curriculum?</h3>
-        <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
-          <li><strong>Tailored Recommendations:</strong> Receive a curriculum designed specifically for you, targeting the skills and knowledge you need to advance.</li>
-          <li><strong>Expert Guidance:</strong> Benefit from expert advice and resources selected to match your career aspirations.</li>
-          <li><strong>Achieve Your Goals:</strong> Accelerate your career progress with a focused, structured learning path.</li>
-        </ul>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-full mt-4">
-          Invest in Your Future Today! [Pay Now]
-        </button>
       </div>
 
       <div className="mb-6">
