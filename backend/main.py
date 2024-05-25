@@ -34,20 +34,6 @@ app = modal.App(
     secrets=[modal.Secret.from_name("twitter")],
 )
 
-
-# interface SectionFeedback {
-#   title: string;
-#   strengths: string[];
-#   improvements: string[];
-#   score: number;
-# }
-
-# interface ResumeReportProps {
-#   candidateName: string;
-#   date: string;
-#   overallScore: number;
-#   sections: SectionFeedback[];
-# }
 class SectionFeedback(BaseModel):
     title: str
     strengths: List[str]

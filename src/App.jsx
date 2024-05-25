@@ -75,7 +75,9 @@ const ResumeUploader = () => {
       .then((response) => {
         // assuming we already have the response object
         // get the PromiseResult object
-        const returnedData = response.data;
+        console.log(response);
+        console.log(response.PromiseResult);
+        const returnedData = response;
         console.log(returnedData);
         setIsLoading(false);
         setReviewMarkdown(returnedData);
