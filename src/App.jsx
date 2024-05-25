@@ -1,64 +1,77 @@
-import  { useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
-import "./App.css"
+import React, { useState, useEffect } from 'react';
+import "./App.css";
 import { inject } from '@vercel/analytics';
+import ResumeReport from "./components/ResumeReport/component";
 
-const explainResumeUrl = "https://simonmoisselin--resume-v1-review-resume.modal.run"
+const explainResumeUrl = "https://simonmoisselin--resume-v2-review-resume.modal.run";
 inject();
+
+const steps = [
+  { percentage: 10, text: "Extracting information from image and text..." },
+  { percentage: 30, text: "Finding layout issues..." },
+  { percentage: 50, text: "Finding typos..." },
+  { percentage: 70, text: "Analyzing the content..." },
+  { percentage: 90, text: "Finding more improvements..." },
+  { percentage: 100, text: "Finalizing..." },
+];
+
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
-  const [reviewMarkdown, setReviewMarkdown] = useState("Feedback will appear here");
+  const [reportData, setReportData] = useState(null);
   const backgroundColor = '#f7fafc'; // Tailwind's cool gray 100, change as needed
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [stepText, setStepText] = useState(steps[0].text);
+
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          const nextProgress = prev + (100 / 18);
+          const currentStep = steps.find(step => nextProgress <= step.percentage);
+          setStepText(currentStep ? currentStep.text : steps[steps.length - 1].text);
+          if (nextProgress >= 100) {
+            clearInterval(interval);
+          }
+          return nextProgress;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   const handleFileChange = (e) => {
     setResume(e.target.files[0]);
   };
 
   const uploadResume = async () => {
     setIsLoading(true); // Start loading
-    setReviewMarkdown(''); // Clear previous review
+    setProgress(0); // Reset progress
 
     const formData = new FormData();
-    formData.append('image', resume, );
+    formData.append('image', resume);
 
     fetch(explainResumeUrl, {
       method: 'POST',
       headers: {
-        // Include the Authorization header with the Bearer token
-        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN }`,
+        'Authorization': `Bearer ${import.meta.env.VITE_AUTH_TOKEN}`,
       },
       body: formData,
     })
-      .then((response) => {
-        const reader = response.body.getReader();
-        let decoder = new TextDecoder();
-        function processStream({ done, value }) {
-          if (done) {
-            const textChunk = decoder.decode(value, { stream: true });
-            setReviewMarkdown(current => current + textChunk);
-            setIsLoading(false); // Stop loading when the stream is complete
-            return;
-          }
-          // Decode stream chunks and add to buffer
-          const textChunk = decoder.decode(value, { stream: true });
-          setReviewMarkdown(current => current + textChunk)
-          // Continue reading the stream
-          reader.read().then(processStream);
-        }
-
-        // Start processing the stream
-        reader.read().then(processStream);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error('Error uploading file:', error);
-        setReviewMarkdown(error)
-      });
+    .then(res => res.json())
+    .then((response) => {
+      console.log(response);
+      const returnedData = response;
+      setIsLoading(false);
+      setReportData(returnedData);
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      console.error('Error uploading file:', error);
+      setReportData(null);
+    });
   };
-
-
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-12" style={{ backgroundColor }}>
@@ -82,19 +95,28 @@ const ResumeUploader = () => {
         >
           Review Resume
         </button>
+        {isLoading && (
+          <div className="mt-4 w-full">
+            <div className="h-4 bg-gray-200 rounded-full">
+              <div
+                className="h-4 bg-blue-500 rounded-full transition-all duration-500 ease-in-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">{stepText}</p>
+          </div>
+        )}
       </div>
 
       <div className="w-full max-w-4xl">
-        <h2 className="text-3xl font-semibold mb-4">Feedback</h2>
+        <h2 className="text-3xl font-semibold mb-4">Report</h2>
         <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
-          <Markdown className="markdown" rehypePlugins={[rehypeHighlight]}  remarkPlugins={[remarkGfm]}>{reviewMarkdown || ""}</Markdown>
+          <ResumeReport data={reportData} />
         </div>
       </div>
       <footer className="w-full max-w-4xl mt-12 mb-4">
         <div className="text-center">
-          <p className="text-lg">
-            Hi, I am Simon Moisselin
-          </p>
+          <p className="text-lg">Hi, I am Simon Moisselin</p>
           <p className="text-lg">
             Follow me on <a href="https://www.youtube.com/channel/UCPTEKGB8JbLxdCj4BdPpb3Q?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">YouTube</a>
           </p>
@@ -103,7 +125,6 @@ const ResumeUploader = () => {
           </p>
         </div>
       </footer>
-    
     </div>
   );
 };

@@ -40,3 +40,10 @@ I usually don't want to share my prompts to the real world. For that, I always w
 ## Deploy to vercel
 
 I suggest deploying that to vercet. After you pushed that in your github repo, just create a project based on the github repo, and don't forget to add `VITE_AUTH_TOKEN` as an env variable inside the vercel project.
+
+
+
+
+## Services available for Improving a Resume 
+- We need a list of courses that the user should follow in order to be up to date in his field
+- 
