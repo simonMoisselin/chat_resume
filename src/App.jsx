@@ -44,7 +44,7 @@ const sampleData = {
   ]
 };
 
-const explainResumeUrl = "https://simonmoisselin--resume-v1-review-resume.modal.run"
+const explainResumeUrl = "https://simonmoisselin--resume-v2-review-resume.modal.run"
 inject();
 const ResumeUploader = () => {
   const [resume, setResume] = useState(null);
@@ -71,24 +71,9 @@ const ResumeUploader = () => {
       body: formData,
     })
       .then((response) => {
-        const reader = response.body.getReader();
-        let decoder = new TextDecoder();
-        function processStream({ done, value }) {
-          if (done) {
-            const textChunk = decoder.decode(value, { stream: true });
-            setReviewMarkdown(current => current + textChunk);
-            setIsLoading(false); // Stop loading when the stream is complete
-            return;
-          }
-          // Decode stream chunks and add to buffer
-          const textChunk = decoder.decode(value, { stream: true });
-          setReviewMarkdown(current => current + textChunk)
-          // Continue reading the stream
-          reader.read().then(processStream);
-        }
-
-        // Start processing the stream
-        reader.read().then(processStream);
+        // assuming we already have the response object
+        const returnedData = response.json();
+        console.log(returnedData);
       })
       .catch((error) => {
         setIsLoading(false);

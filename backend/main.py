@@ -5,6 +5,8 @@ import json
 import logging
 import os
 from typing import Dict, List
+import dotenv
+dotenv.load_dotenv()
 
 import modal
 from fastapi import Header, Request
@@ -23,10 +25,10 @@ volume = modal.NetworkFileSystem.persisted("resumes-volume")
 CACHE_DIR = "/cache"
 UPLOADED_RESUMES_DIR = pathlib.Path(CACHE_DIR, "uploaded_resumes")
 app_image = (
-    modal.Image.debian_slim().apt_install("poppler-utils").pip_install("openai==1.30.3","numpy","Pillow","pdf2image", "instructor", "pypdf")
+    modal.Image.debian_slim().apt_install("poppler-utils").pip_install("openai==1.30.3","numpy","Pillow","pdf2image", "instructor", "pypdf", "python-dotenv", "fastapi==0.111.0")
 )
 
-stub = modal.Stub(
+app = modal.App(
     "resume-v2",
     image=app_image,
     secrets=[modal.Secret.from_name("twitter")],
@@ -46,7 +48,6 @@ stub = modal.Stub(
 #   overallScore: number;
 #   sections: SectionFeedback[];
 # }
-from pydantic import BaseModel
 class SectionFeedback(BaseModel):
     title: str
     strengths: List[str]
@@ -79,11 +80,11 @@ from typing import Dict
 
 import openai
 from openai import OpenAI
-from fastapi import FastAPI, File, UploadFile
+from fastapi import UploadFile
 import instructor 
 client = instructor.from_openai(OpenAI())
 
-@stub.function()
+@app.function()
 def call_openai(messages, max_tokens, model="gpt-4o"):
     import openai
     resume_report = client.chat.completions.create(
@@ -106,14 +107,14 @@ def verify_token(token):
 
 
 def save_resume(filename, file_data):
-    file_extension = image.filename.split('.')[-1].lower()
-    filename_dated = f"{image.filename}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_extension}"
+    file_extension = filename.split('.')[-1].lower()
+    filename_dated = f"{filename}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_extension}"
     dest_file = pathlib.Path(UPLOADED_RESUMES_DIR, filename_dated)
     with open(dest_file, "wb") as f:
         f.write(file_data)
         print(f"Saved {dest_file}")
 
-@stub.function(    network_file_systems={CACHE_DIR: volume},
+@app.function(network_file_systems={CACHE_DIR: volume},
 )
 @web_endpoint(
     method="POST",
@@ -147,7 +148,7 @@ def review_resume(request: Request,image: UploadFile):
     else:
         return {"error": "Unsupported file type"}, 400
     base64_img = base64.b64encode(image_bytes).decode("utf-8")
-    
+
 
 
 
