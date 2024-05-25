@@ -5,22 +5,49 @@ interface SectionFeedback {
   strengths: string[];
   improvements: string[];
   score: number;
+  detailedComments: string;
+}
+
+interface Recommendation {
+  content: string;
+  importance: number;
+  difficulty: number;
+}
+
+interface ActionPlanItem {
+  action: string;
+  deadline: string;
 }
 
 interface ResumeReportProps {
-  candidateName: string;
-  date: string;
-  overallScore: number;
-  sections: SectionFeedback[];
+  data: {
+    candidateName: string;
+    date: string;
+    overallScore: number;
+    sections: SectionFeedback[];
+    candidateEmail: string;
+    recommendations: Recommendation[];
+    summary: string;
+    actionPlan: ActionPlanItem[];
+  };
 }
 
 const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
-
-
   if (!data) {
     return null;
   }
-  const { candidateName, date, overallScore, sections } = data;
+
+  const {
+    candidateName,
+    date,
+    overallScore,
+    sections,
+    candidateEmail,
+    recommendations,
+    summary,
+    actionPlan,
+  } = data;
+
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -28,10 +55,15 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
           <h1 className="text-2xl font-bold">Resume Feedback Report</h1>
           <p className="text-gray-500 dark:text-gray-400">Candidate: {candidateName}</p>
           <p className="text-gray-500 dark:text-gray-400">Date: {date}</p>
+          <p className="text-gray-500 dark:text-gray-400">Email: {candidateEmail}</p>
         </div>
         <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-4 py-2 rounded-full font-medium">
           Overall Score: {overallScore}/100
         </div>
+      </div>
+      <div className="mb-6">
+        <h2 className="text-xl font-bold">Summary</h2>
+        <p className="text-gray-700 dark:text-gray-300">{summary}</p>
       </div>
       <div className="space-y-8">
         {sections.map((section, index) => (
@@ -55,6 +87,10 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
                 </ul>
               </div>
             </div>
+            <div className="mt-2">
+              <p className="text-gray-500 dark:text-gray-400 mb-1">Detailed Comments:</p>
+              <p className="text-gray-700 dark:text-gray-300">{section.detailedComments}</p>
+            </div>
             <div className="flex items-center mt-2">
               <div className={`px-4 py-2 rounded-full font-medium ${section.score >= 85 ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' : section.score >= 70 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300' : 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300'}`}>
                 Score: {section.score}/100
@@ -62,6 +98,29 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-2">Recommendations</h2>
+        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
+          {recommendations.map((recommendation, index) => (
+            <li key={index}>
+              <p className="font-bold">{recommendation.content}</p>
+              <p>Importance: {recommendation.importance}/100</p>
+              <p>Difficulty: {recommendation.difficulty}/100</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-2">Action Plan</h2>
+        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
+          {actionPlan.map((item, index) => (
+            <li key={index}>
+              <p className="font-bold">{item.action}</p>
+              <p>Deadline: {item.deadline}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

@@ -34,11 +34,25 @@ app = modal.App(
     secrets=[modal.Secret.from_name("twitter")],
 )
 
+from pydantic import BaseModel, Field
 class SectionFeedback(BaseModel):
     title: str
     strengths: List[str]
     improvements: List[str]
-    score: float
+    score: float = Field(..., ge=0, le=100)
+    detailedComments: str = Field(..., description="Detailed comments for the section")
+
+
+
+class Recommendation(BaseModel):
+    content : str = Field(..., description="What is the recommendation, talking to the candidate about what they can improve on directly")
+    importance: float = Field(..., ge=0, le=100, description="How important is this recommendation")
+    difficulty: float = Field(..., ge=0, le=100, description="How difficult is this recommendation to implement")
+
+
+class ActionPlanItem(BaseModel): 
+    action: str = Field(..., description="What should the candidate do to improve their resume. What to learn / create and what line to add and where as a result")
+    deadline: str = Field(..., description="When should the candidate complete this action, in pretty date, like 'in 2 weeks', 1month, etc. If this is just a text update, just say 'as soon as possible'. If this is a design update, say `next weekend`")
 
 class ResumeReport(BaseModel):
     candidateName: str
@@ -46,6 +60,11 @@ class ResumeReport(BaseModel):
     overallScore: float
     sections: List[SectionFeedback]
     candidateEmail: str
+    recommendations: List[Recommendation]
+    summary: str = Field(..., description="A brief summary of the overall assessment")
+    actionPlan: List[ActionPlanItem] = Field(..., description="A detailed action plan for the candidate, where we give resources and deadlines for the candidate to improve their resume")
+
+
 
 
 
@@ -57,6 +76,7 @@ You are receiving picture of resumes and your goal is to review it. This will be
 - Be concise, and friendly, this will appear in a website after user uploads a resume. Make encouraging comments if possible
 - If the image is not a resume, send `This image is not a resume, it's a `<picture of xxx>`, please try again.`
 - Make the review of the resume in the language the resume is in (if it's in French, review it in French, if it's in English, review it in English etc)
+- Add a section aboutn `Layout Improvement` talking about the design of the resume and the layout of the information
 """
 
 
