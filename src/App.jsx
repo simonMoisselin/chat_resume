@@ -4,6 +4,45 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import "./App.css"
 import { inject } from '@vercel/analytics';
+import ResumeReport from "./components/ResumeReport/component";
+
+const sampleData = {
+  candidateName: "Jane Doe",
+  date: "2024-05-25",
+  overallScore: 85,
+  sections: [
+    {
+      title: "Personal Information",
+      strengths: ["Clearly presented contact information", "Consistent formatting and layout"],
+      improvements: ["Consider adding a professional headshot", "Ensure all information is up-to-date"],
+      score: 90
+    },
+    {
+      title: "Professional Summary",
+      strengths: ["Concise and impactful summary", "Highlights key skills and expertise"],
+      improvements: ["Consider adding quantifiable achievements", "Tailor the summary to the target role"],
+      score: 80
+    },
+    {
+      title: "Work Experience",
+      strengths: ["Detailed and relevant work history", "Quantified achievements and impact"],
+      improvements: ["Consider using more action-oriented language", "Ensure consistency in formatting and structure"],
+      score: 90
+    },
+    {
+      title: "Education",
+      strengths: ["Clearly presented educational background", "Relevant certifications and training"],
+      improvements: ["Consider adding GPA or academic honors", "Highlight any relevant coursework or projects"],
+      score: 85
+    },
+    {
+      title: "Skills",
+      strengths: ["Comprehensive list of technical skills", "Relevant soft skills mentioned"],
+      improvements: ["Prioritize skills based on relevance to the job", "Consider listing proficiency levels"],
+      score: 75
+    }
+  ]
+};
 
 const explainResumeUrl = "https://simonmoisselin--resume-v1-review-resume.modal.run"
 inject();
@@ -87,7 +126,8 @@ const ResumeUploader = () => {
       <div className="w-full max-w-4xl">
         <h2 className="text-3xl font-semibold mb-4">Feedback</h2>
         <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
-          <Markdown className="markdown" rehypePlugins={[rehypeHighlight]}  remarkPlugins={[remarkGfm]}>{reviewMarkdown || ""}</Markdown>
+          <ResumeReport data={sampleData} />
+          {/* <Markdown className="markdown" rehypePlugins={[rehypeHighlight]}  remarkPlugins={[remarkGfm]}>{reviewMarkdown || ""}</Markdown> */}
         </div>
       </div>
       <footer className="w-full max-w-4xl mt-12 mb-4">
