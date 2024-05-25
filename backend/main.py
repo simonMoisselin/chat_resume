@@ -62,7 +62,7 @@ class ResumeReport(BaseModel):
     candidateEmail: str
     recommendations: List[Recommendation]
     summary: str = Field(..., description="A brief summary of the overall assessment")
-    actionPlan: List[ActionPlanItem] = Field(..., description="A detailed action plan for the candidate, where we give resources and deadlines for the candidate to improve their resume")
+    actionPlan: List[ActionPlanItem] = Field(..., description="A detailed action plan for the candidate, where we give resources and deadlines for the candidate to improve their resume, with at least 5 items")
 
 
 

@@ -52,10 +52,13 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Resume Feedback Report</h1>
+
           <p className="text-gray-500 dark:text-gray-400">Candidate: {candidateName}</p>
           <p className="text-gray-500 dark:text-gray-400">Date: {date}</p>
-          <p className="text-gray-500 dark:text-gray-400">Email: {candidateEmail}</p>
+          {/* make the email clickable */}
+          <a href={`mailto:${candidateEmail}`} className="text-blue-500 dark:text-blue-400 hover:underline">
+            {candidateEmail}
+          </a>
         </div>
         <div className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-4 py-2 rounded-full font-medium">
           Overall Score: {overallScore}/100
@@ -64,6 +67,17 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
       <div className="mb-6">
         <h2 className="text-xl font-bold">Summary</h2>
         <p className="text-gray-700 dark:text-gray-300">{summary}</p>
+      </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-2">Action Plan</h2>
+        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
+          {actionPlan.map((item, index) => (
+            <li key={index}>
+              <p className="font-bold">{item.action}</p>
+              <p>Deadline: {item.deadline}</p>
+            </li>
+          ))}
+        </ul>
       </div>
       <div className="space-y-8">
         {sections.map((section, index) => (
@@ -111,17 +125,7 @@ const ResumeReport: React.FC<ResumeReportProps> = ({ data }) => {
           ))}
         </ul>
       </div>
-      <div className="mt-6">
-        <h2 className="text-xl font-bold mb-2">Action Plan</h2>
-        <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
-          {actionPlan.map((item, index) => (
-            <li key={index}>
-              <p className="font-bold">{item.action}</p>
-              <p>Deadline: {item.deadline}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
+     
     </div>
   );
 };
