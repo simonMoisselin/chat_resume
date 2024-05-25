@@ -75,7 +75,8 @@ const ResumeUploader = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-12" style={{ backgroundColor }}>
-      <h1 className="text-4xl font-bold mb-8">Resume Reviewer with AI</h1>
+      <h1 className="text-4xl font-bold mb-8">Resume Report & Evaluation</h1>
+      <h2 className="text-2xl font-semibold mb-4">Upload your resume to get a free report</h2>
       <div className="w-full max-w-md p-6 border-2 border-dashed rounded-md bg-white shadow-md mb-8">
         <input
           type="file"
@@ -108,12 +109,25 @@ const ResumeUploader = () => {
         )}
       </div>
 
-      <div className="w-full max-w-4xl">
-        <h2 className="text-3xl font-semibold mb-4">Report</h2>
-        <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
-          <ResumeReport data={reportData} />
+      {reportData && (
+        <div className="w-full max-w-4xl">
+          <div className="flex items-center justify-between bg-white p-4 rounded shadow-md mb-8">
+            <div className="text-gray-700 dark:text-gray-300">
+              <h2 className="text-xl font-bold">Personalized Learning</h2>
+              <p>Boost your career with a tailored learning plan.</p>
+            </div>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
+              Invest in Your Future! [Pay Now]
+            </button>
+          </div>
+
+          <h2 className="text-3xl font-semibold mb-4">Report</h2>
+          <div className="markdown bg-white p-6 rounded shadow h-auto overflow-auto custom-markdown">
+            <ResumeReport data={reportData} />
+          </div>
         </div>
-      </div>
+      )}
+
       <footer className="w-full max-w-4xl mt-12 mb-4">
         <div className="text-center">
           <p className="text-lg">Hi, I am Simon Moisselin</p>
@@ -121,7 +135,7 @@ const ResumeUploader = () => {
             Follow me on <a href="https://www.youtube.com/channel/UCPTEKGB8JbLxdCj4BdPpb3Q?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">YouTube</a>
           </p>
           <p className="text-lg mt-2">
-            For questions or partnerships, email me at <a href="mailto:simon.moisselin@gmail.com" className="text-blue-600 hover:underline">simon.moisselin@gmail.com</a>
+            Email me at <a href="mailto:simon.moisselin@gmail.com" className="text-blue-600 hover:underline">simon.moisselin@gmail.com</a>
           </p>
         </div>
       </footer>
